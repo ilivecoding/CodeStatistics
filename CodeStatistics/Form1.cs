@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Formats.Asn1;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -31,7 +32,7 @@ namespace CodeStatistics
         private async void btnStart_Click(object sender, EventArgs e)
         {
             cancellationTokenSource = new CancellationTokenSource();
-            
+
             await Task.Run(async () =>
             {
                 await Start(txtPath.Text, ckbNoEmpty.Checked, ckbNoChild.Checked, txtSearchPattern.Text);
@@ -56,15 +57,13 @@ namespace CodeStatistics
         {
             BeginInvoke(() =>
             {
-                if (reset)
-                {
-                    progressBar1.Maximum = maxValue;
+                progressBar1.Maximum = maxValue;
                 progressBar1.Value++;
             });
-                }
+        }
 
         private void UpdateButton(bool enable)
-                {
+        {
             BeginInvoke(() =>
             {
                 btnStart.Enabled = enable;
@@ -87,13 +86,7 @@ namespace CodeStatistics
                 ResetProgress();
                 UpdateButton(false);
 
-                StatisticsResult statisticsResult = new StatisticsResult()
-                {
-                    NoEmpty = noEmpty,
-                    NoChild = noChild,
-                    Languages = new Dictionary<string, LanguageInfo> { },
-                };
-
+                Hashtable hashtable = new Hashtable();
                 var files = Directory.GetFiles(fileDir, searchPattern, noChild ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
@@ -106,24 +99,19 @@ namespace CodeStatistics
                     {
                         lines = txt.Where(x => !string.IsNullOrWhiteSpace(x)).Count();
                     }
-
-                    if (!statisticsResult.Languages.ContainsKey(ext))
+                    if (!hashtable.Contains(ext))
                     {
-                        statisticsResult.Languages.Add(ext, new LanguageInfo()
-                        {
-                            Extension = ext,
-                            Count = lines,
-                        });
+                        hashtable.Add(ext, lines);
                     }
                     else
                     {
-                        statisticsResult.Languages[ext].Count += lines;
+                        hashtable[ext] = Convert.ToInt32(hashtable[ext]) + lines;
                     }
 
                     UpdateProgress(files.Length);
                 }
 
-                var res = System.Text.Json.JsonSerializer.Serialize(statisticsResult, new System.Text.Json.JsonSerializerOptions()
+                var res = System.Text.Json.JsonSerializer.Serialize(hashtable, new System.Text.Json.JsonSerializerOptions()
                 {
                     WriteIndented = true,
                 });
@@ -143,15 +131,3 @@ namespace CodeStatistics
     }
 }
 
-public class StatisticsResult
-{
-    public bool NoEmpty { get; set; }
-    public bool NoChild { get; set; }
-    public Dictionary<string, LanguageInfo> Languages { get; set; }
-}
-
-public class LanguageInfo
-{
-    public string Extension { get; set; }
-    public int Count { get; set; }
-}
