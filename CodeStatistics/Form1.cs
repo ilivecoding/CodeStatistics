@@ -31,7 +31,7 @@ namespace CodeStatistics
         private async void btnStart_Click(object sender, EventArgs e)
         {
             cancellationTokenSource = new CancellationTokenSource();
-            
+
             await Task.Run(async () =>
             {
                 await Start(txtPath.Text, ckbNoEmpty.Checked, ckbNoChild.Checked, txtSearchPattern.Text);
@@ -56,15 +56,13 @@ namespace CodeStatistics
         {
             BeginInvoke(() =>
             {
-                if (reset)
-                {
-                    progressBar1.Maximum = maxValue;
+                progressBar1.Maximum = maxValue;
                 progressBar1.Value++;
             });
-                }
+        }
 
         private void UpdateButton(bool enable)
-                {
+        {
             BeginInvoke(() =>
             {
                 btnStart.Enabled = enable;
