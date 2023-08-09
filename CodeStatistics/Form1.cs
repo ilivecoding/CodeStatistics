@@ -8,10 +8,12 @@ namespace CodeStatistics
 {
     public partial class Form1 : Form
     {
+        SynchronizationContext synchronizationContext;
         public Form1()
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterScreen;
+            synchronizationContext = SynchronizationContext.Current;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -79,6 +81,11 @@ namespace CodeStatistics
             });
         }
 
+        private void UpdateProgressTotal(object? value)
+        {
+            lbProgress.Text = value?.ToString();
+        }
+
         private async Task Start(string fileDir, bool noEmpty, bool noChild, string searchPattern)
         {
             try
@@ -86,11 +93,16 @@ namespace CodeStatistics
                 ResetProgress();
                 UpdateButton(false);
 
+
                 Hashtable hashtable = new Hashtable();
                 var files = Directory.GetFiles(fileDir, searchPattern, noChild ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories);
+
+                int index = 0;
                 foreach (var file in files)
                 {
                     cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                    synchronizationContext.Post(UpdateProgressTotal, ++index + "/" + files.Length);
 
                     var ext = new FileInfo(file).Extension.ToLower();
                     var txt = await File.ReadAllLinesAsync(file);

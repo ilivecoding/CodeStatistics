@@ -40,6 +40,7 @@
             txtPath = new TextBox();
             label1 = new Label();
             richTextBox1 = new RichTextBox();
+            lbProgress = new Label();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -55,6 +56,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(lbProgress);
             splitContainer1.Panel1.Controls.Add(label2);
             splitContainer1.Panel1.Controls.Add(txtSearchPattern);
             splitContainer1.Panel1.Controls.Add(ckbNoChild);
@@ -171,6 +173,15 @@
             richTextBox1.TabIndex = 0;
             richTextBox1.Text = "";
             // 
+            // lbProgress
+            // 
+            lbProgress.AutoSize = true;
+            lbProgress.Location = new Point(71, 351);
+            lbProgress.Name = "lbProgress";
+            lbProgress.Size = new Size(18, 20);
+            lbProgress.TabIndex = 10;
+            lbProgress.Text = "0";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(9F, 20F);
@@ -202,5 +213,6 @@
         private RichTextBox richTextBox1;
         private TextBox txtSearchPattern;
         private Label label2;
+        private Label lbProgress;
     }
 }
